@@ -1,0 +1,890 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Banker CRM</title>
+  <style>
+    :root {
+      --bg: #f3f6fb;
+      --card: #ffffff;
+      --text: #1f2a37;
+      --muted: #5c6b7a;
+      --border: #d8e0ea;
+      --brand: #1f4fd6;
+      --brand-2: #163ca2;
+      --danger: #b42318;
+      --ok: #0f7b6c;
+      --warn: #a15c00;
+      --shadow: 0 8px 24px rgba(16, 24, 40, 0.08);
+      --radius: 12px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.4;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .topbar {
+      display: flex;
+      gap: 12px;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.6rem;
+      letter-spacing: 0.2px;
+    }
+
+    .sub {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    button, .btn {
+      border: 1px solid transparent;
+      background: #e9eef9;
+      color: #1a2b4f;
+      border-radius: 10px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    button:hover, .btn:hover { filter: brightness(0.98); }
+    button:active, .btn:active { transform: translateY(1px); }
+
+    .primary {
+      background: var(--brand);
+      color: #fff;
+    }
+
+    .primary:hover { background: var(--brand-2); }
+
+    .danger {
+      background: #fef3f2;
+      border-color: #fecdca;
+      color: var(--danger);
+    }
+
+    .ghost {
+      background: #fff;
+      border-color: var(--border);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(130px, 1fr));
+      gap: 10px;
+      margin: 14px 0 18px;
+    }
+
+    .stat {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px;
+      box-shadow: var(--shadow);
+    }
+
+    .stat .label {
+      color: var(--muted);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .stat .value {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-top: 4px;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    input[type="text"], input[type="date"], select, textarea, input[type="number"] {
+      width: 100%;
+      padding: 9px 10px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fff;
+      font: inherit;
+      color: inherit;
+    }
+
+    textarea { min-height: 90px; resize: vertical; }
+
+    .search {
+      flex: 1;
+      min-width: 220px;
+    }
+
+    .panes {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 14px;
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .panel h2 {
+      margin: 0;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      font-size: 1rem;
+      background: #fafcff;
+    }
+
+    .list {
+      display: flex;
+      flex-direction: column;
+      max-height: 62vh;
+      overflow: auto;
+    }
+
+    .contact, .queue-item {
+      border-bottom: 1px solid var(--border);
+      padding: 12px 14px;
+    }
+
+    .contact:last-child, .queue-item:last-child { border-bottom: none; }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .name {
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    .meta {
+      color: var(--muted);
+      font-size: 0.88rem;
+      margin-top: 2px;
+    }
+
+    .chip {
+      display: inline-block;
+      font-size: 0.78rem;
+      border-radius: 999px;
+      padding: 2px 8px;
+      margin-right: 6px;
+      border: 1px solid var(--border);
+      background: #f9fbff;
+      color: #334155;
+    }
+
+    .queue-status { font-size: 0.82rem; font-weight: 700; }
+    .status-overdue { color: var(--danger); }
+    .status-thisweek { color: var(--warn); }
+    .status-next2 { color: #295fa6; }
+    .status-later { color: var(--ok); }
+    .status-nodate { color: var(--muted); }
+
+    .inline-actions {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .small { font-size: 0.78rem; padding: 5px 8px; border-radius: 8px; }
+
+    .empty {
+      padding: 18px;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    dialog {
+      border: none;
+      width: min(900px, 96vw);
+      max-height: 90vh;
+      border-radius: 14px;
+      padding: 0;
+      box-shadow: 0 20px 40px rgba(2, 6, 23, 0.3);
+    }
+
+    dialog::backdrop { background: rgba(15, 23, 42, 0.5); }
+
+    .modal-head {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-body {
+      padding: 14px;
+      overflow: auto;
+      max-height: calc(90vh - 114px);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .full { grid-column: 1 / -1; }
+
+    label {
+      display: block;
+      font-size: 0.82rem;
+      color: #334155;
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+
+    .modal-foot {
+      border-top: 1px solid var(--border);
+      padding: 10px 14px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    @media (max-width: 920px) {
+      .grid { grid-template-columns: repeat(2, minmax(140px, 1fr)); }
+      .panes { grid-template-columns: 1fr; }
+      .list { max-height: none; }
+      .form-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="topbar">
+      <div>
+        <h1>Banker CRM</h1>
+        <div class="sub">Track relationships, touchpoints, and follow-ups.</div>
+      </div>
+      <div class="actions">
+        <button id="addBtn" class="primary">+ Add Contact</button>
+        <button id="exportBtn" class="ghost">Export JSON</button>
+        <label class="btn ghost" for="importInput">Import JSON</label>
+        <input id="importInput" type="file" accept="application/json" style="display:none;" />
+      </div>
+    </div>
+
+    <section class="grid" id="dashboard"></section>
+
+    <div class="toolbar">
+      <input id="searchInput" class="search" type="text" placeholder="Search name, firm, tags, notes..." />
+      <span class="sub" id="resultsMeta"></span>
+    </div>
+
+    <div class="panes">
+      <section class="panel">
+        <h2>Contacts</h2>
+        <div class="list" id="contactsList"></div>
+      </section>
+      <section class="panel">
+        <h2>Follow-up Queue</h2>
+        <div class="list" id="queueList"></div>
+      </section>
+    </div>
+  </div>
+
+  <dialog id="contactDialog">
+    <div class="modal-head">
+      <strong id="modalTitle">Add Contact</strong>
+      <button id="closeModalBtn" class="ghost small">Close</button>
+    </div>
+    <form id="contactForm">
+      <div class="modal-body form-grid">
+        <div>
+          <label for="full_name">Full Name</label>
+          <input id="full_name" name="full_name" type="text" required />
+        </div>
+        <div>
+          <label for="firm">Firm</label>
+          <input id="firm" name="firm" type="text" />
+        </div>
+        <div>
+          <label for="role">Role</label>
+          <input id="role" name="role" type="text" />
+        </div>
+        <div>
+          <label for="group">Group</label>
+          <select id="group" name="group" required>
+            <option>Sponsor</option>
+            <option>Law Firm</option>
+            <option>Restructuring Advisor</option>
+            <option>Investment Bank</option>
+            <option>Consulting</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="full">
+          <label for="coverage_tags">Coverage Tags (comma-separated)</label>
+          <input id="coverage_tags" name="coverage_tags" type="text" placeholder="Telco, Rx, Credit" />
+        </div>
+        <div>
+          <label for="relationship_strength">Relationship Strength (1-5)</label>
+          <input id="relationship_strength" name="relationship_strength" type="number" min="1" max="5" value="3" />
+        </div>
+        <div>
+          <label for="last_outcome">Last Outcome</label>
+          <select id="last_outcome" name="last_outcome">
+            <option>Intro Call</option>
+            <option>Coffee</option>
+            <option>Dinner</option>
+            <option>Live Deal</option>
+            <option>No Response</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div>
+          <label for="last_touch">Last Touch</label>
+          <input id="last_touch" name="last_touch" type="date" />
+        </div>
+        <div>
+          <label for="next_followup">Next Follow-up</label>
+          <input id="next_followup" name="next_followup" type="date" />
+        </div>
+        <div class="full">
+          <label for="how_i_can_help">How I Can Help</label>
+          <textarea id="how_i_can_help" name="how_i_can_help"></textarea>
+        </div>
+        <div class="full">
+          <label for="deal_context">Deal Context</label>
+          <textarea id="deal_context" name="deal_context"></textarea>
+        </div>
+        <div class="full">
+          <label for="notes">Notes</label>
+          <textarea id="notes" name="notes"></textarea>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button type="button" id="cancelBtn" class="ghost">Cancel</button>
+        <button type="submit" class="primary">Save Contact</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script>
+    const STORAGE_KEY = "banker_crm_contacts_v1";
+    const groups = ["Sponsor", "Law Firm", "Restructuring Advisor", "Investment Bank", "Consulting", "Other"];
+    const outcomes = ["Intro Call", "Coffee", "Dinner", "Live Deal", "No Response", "Other"];
+
+    const sampleContacts = [
+      {
+        id: crypto.randomUUID(),
+        full_name: "Lauren M. Davis",
+        firm: "Kirkland & Ellis",
+        role: "Restructuring Partner",
+        group: "Law Firm",
+        coverage_tags: "Rx, Liability Management, Sponsor",
+        relationship_strength: 4,
+        last_touch: dateOffset(-9),
+        next_followup: dateOffset(2),
+        how_i_can_help: "Share lender sentiment and connect with private credit desks.",
+        deal_context: "Advising sponsor-backed healthcare issuer evaluating exchange offer.",
+        notes: "Very responsive by text. Prefers morning coffee near 601 Lex.",
+        last_outcome: "Coffee"
+      },
+      {
+        id: crypto.randomUUID(),
+        full_name: "Andrew Park",
+        firm: "Alvarez & Marsal",
+        role: "Managing Director",
+        group: "Consulting",
+        coverage_tags: "Rx, Industrials, Cash Flow",
+        relationship_strength: 3,
+        last_touch: dateOffset(-16),
+        next_followup: dateOffset(-1),
+        how_i_can_help: "Provide financing alternatives for near-term liquidity needs.",
+        deal_context: "Interim CFO support on stressed auto supplier.",
+        notes: "Asked for recent DIP case studies.",
+        last_outcome: "Intro Call"
+      },
+      {
+        id: crypto.randomUUID(),
+        full_name: "Michael Brenner",
+        firm: "PJT Partners",
+        role: "Managing Director",
+        group: "Investment Bank",
+        coverage_tags: "FIG, RX, M&A",
+        relationship_strength: 5,
+        last_touch: dateOffset(-4),
+        next_followup: dateOffset(10),
+        how_i_can_help: "Bring sponsor color and cross-border investor access.",
+        deal_context: "Lead advisor on regional bank strategic review.",
+        notes: "Strong relationship from prior live deal.",
+        last_outcome: "Live Deal"
+      },
+      {
+        id: crypto.randomUUID(),
+        full_name: "Samantha Ortiz",
+        firm: "Stone Ridge Capital",
+        role: "Partner",
+        group: "Sponsor",
+        coverage_tags: "Telco, Infrastructure, Credit",
+        relationship_strength: 4,
+        last_touch: dateOffset(-21),
+        next_followup: dateOffset(5),
+        how_i_can_help: "Source co-investors and provide debt market windows.",
+        deal_context: "Considering carve-out of fiber assets.",
+        notes: "Prefers concise email updates with valuation comps.",
+        last_outcome: "Dinner"
+      },
+      {
+        id: crypto.randomUUID(),
+        full_name: "Rachel Kim",
+        firm: "Lazard",
+        role: "Director",
+        group: "Investment Bank",
+        coverage_tags: "Consumer, M&A, Sponsor",
+        relationship_strength: 3,
+        last_touch: dateOffset(-6),
+        next_followup: dateOffset(17),
+        how_i_can_help: "Offer debt capacity analysis for buyside mandates.",
+        deal_context: "Running sponsor sell-side in specialty retail.",
+        notes: "Open to triaging financing options jointly.",
+        last_outcome: "Intro Call"
+      },
+      {
+        id: crypto.randomUUID(),
+        full_name: "David Ng",
+        firm: "Houlihan Lokey",
+        role: "Senior VP",
+        group: "Restructuring Advisor",
+        coverage_tags: "Credit, Rx, Energy",
+        relationship_strength: 2,
+        last_touch: dateOffset(-33),
+        next_followup: "",
+        how_i_can_help: "Connect with rescue capital funds for out-of-court options.",
+        deal_context: "Advising E&P company on covenant reset discussions.",
+        notes: "No response on last two outreach attempts.",
+        last_outcome: "No Response"
+      },
+      {
+        id: crypto.randomUUID(),
+        full_name: "Priya Shah",
+        firm: "Evercore",
+        role: "Vice President",
+        group: "Investment Bank",
+        coverage_tags: "Healthcare, FIG, Capital Markets",
+        relationship_strength: 4,
+        last_touch: dateOffset(-2),
+        next_followup: dateOffset(1),
+        how_i_can_help: "Provide investor feedback from crossover accounts.",
+        deal_context: "Potential convert for medtech platform.",
+        notes: "Has strong ties with growth equity funds.",
+        last_outcome: "Coffee"
+      },
+      {
+        id: crypto.randomUUID(),
+        full_name: "Jonathan Reed",
+        firm: "Apollo Global Management",
+        role: "Principal",
+        group: "Sponsor",
+        coverage_tags: "Credit, Industrials, Special Situations",
+        relationship_strength: 5,
+        last_touch: dateOffset(-12),
+        next_followup: dateOffset(28),
+        how_i_can_help: "Flag proprietary opportunities and debt financing pathways.",
+        deal_context: "Evaluating distressed carve-out with union liabilities.",
+        notes: "Best channel is assistant scheduling for in-person meetings.",
+        last_outcome: "Dinner"
+      }
+    ];
+
+    let contacts = loadContacts();
+    let editingId = null;
+
+    const dashboard = document.getElementById("dashboard");
+    const contactsList = document.getElementById("contactsList");
+    const queueList = document.getElementById("queueList");
+    const searchInput = document.getElementById("searchInput");
+    const resultsMeta = document.getElementById("resultsMeta");
+
+    const dialog = document.getElementById("contactDialog");
+    const form = document.getElementById("contactForm");
+    const modalTitle = document.getElementById("modalTitle");
+
+    document.getElementById("addBtn").addEventListener("click", () => openModal());
+    document.getElementById("closeModalBtn").addEventListener("click", closeModal);
+    document.getElementById("cancelBtn").addEventListener("click", closeModal);
+    searchInput.addEventListener("input", render);
+
+    document.getElementById("exportBtn").addEventListener("click", exportJSON);
+    document.getElementById("importInput").addEventListener("change", importJSON);
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const data = formToContact();
+      if (editingId) {
+        contacts = contacts.map((c) => (c.id === editingId ? { ...c, ...data, id: editingId } : c));
+      } else {
+        contacts.unshift({ ...data, id: crypto.randomUUID() });
+      }
+      saveContacts();
+      closeModal();
+      render();
+    });
+
+    contactsList.addEventListener("click", (e) => {
+      const btn = e.target.closest("button[data-action]");
+      if (!btn) return;
+      const id = btn.dataset.id;
+      const action = btn.dataset.action;
+      const contact = contacts.find((c) => c.id === id);
+      if (!contact) return;
+
+      if (action === "edit") {
+        openModal(contact);
+      }
+      if (action === "delete") {
+        if (confirm(`Delete ${contact.full_name}?`)) {
+          contacts = contacts.filter((c) => c.id !== id);
+          saveContacts();
+          render();
+        }
+      }
+    });
+
+    queueList.addEventListener("click", (e) => {
+      const btn = e.target.closest("button[data-queue-action]");
+      if (!btn) return;
+      const id = btn.dataset.id;
+      const action = btn.dataset.queueAction;
+      const c = contacts.find((x) => x.id === id);
+      if (!c) return;
+
+      if (action === "logtouch") {
+        c.last_touch = todayISO();
+      }
+      if (action.startsWith("snooze")) {
+        const days = Number(action.replace("snooze", ""));
+        const basis = c.next_followup || todayISO();
+        c.next_followup = addDays(basis, days);
+      }
+      saveContacts();
+      render();
+    });
+
+    render();
+
+    function render() {
+      const filtered = filteredContacts();
+      renderDashboard(filtered);
+      renderContacts(filtered);
+      renderQueue(filtered);
+      resultsMeta.textContent = `${filtered.length} of ${contacts.length} contact${contacts.length === 1 ? "" : "s"}`;
+    }
+
+    function renderDashboard(list) {
+      const counts = { overdue: 0, thisWeek: 0, next2: 0, later: 0, noDate: 0 };
+      list.forEach((c) => {
+        const bucket = followupBucket(c.next_followup);
+        counts[bucket]++;
+      });
+
+      dashboard.innerHTML = `
+        ${statCard("Overdue", counts.overdue, "status-overdue")}
+        ${statCard("Due This Week", counts.thisWeek, "status-thisweek")}
+        ${statCard("Due Next 2 Weeks", counts.next2, "status-next2")}
+        ${statCard("Later", counts.later, "status-later")}
+        ${statCard("No Date", counts.noDate, "status-nodate")}
+      `;
+    }
+
+    function renderContacts(list) {
+      if (!list.length) {
+        contactsList.innerHTML = `<div class="empty">No contacts match your search.</div>`;
+        return;
+      }
+
+      contactsList.innerHTML = list.map((c) => {
+        const tags = splitTags(c.coverage_tags).map((t) => `<span class="chip">${escapeHtml(t)}</span>`).join("");
+        return `
+          <article class="contact">
+            <div class="row">
+              <div>
+                <div class="name">${escapeHtml(c.full_name)}</div>
+                <div class="meta">${escapeHtml(c.role || "")}${c.role && c.firm ? " · " : ""}${escapeHtml(c.firm || "")}</div>
+              </div>
+              <div>
+                <span class="chip">${escapeHtml(c.group)}</span>
+                <span class="chip">Strength ${Number(c.relationship_strength || 0)}</span>
+              </div>
+            </div>
+            <div style="margin-top:7px;">${tags || '<span class="meta">No tags</span>'}</div>
+            <div class="meta" style="margin-top:6px;">
+              Last touch: ${fmtDate(c.last_touch)} · Next: ${fmtDate(c.next_followup)} · Outcome: ${escapeHtml(c.last_outcome || "")}
+            </div>
+            <div class="meta" style="margin-top:5px;">${escapeHtml(truncate(c.notes || "", 130))}</div>
+            <div class="inline-actions">
+              <button class="small ghost" data-action="edit" data-id="${c.id}">Edit</button>
+              <button class="small danger" data-action="delete" data-id="${c.id}">Delete</button>
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    function renderQueue(list) {
+      const queue = [...list].sort((a, b) => sortByFollowup(a.next_followup, b.next_followup));
+      if (!queue.length) {
+        queueList.innerHTML = `<div class="empty">No follow-ups available.</div>`;
+        return;
+      }
+
+      queueList.innerHTML = queue.map((c) => {
+        const bucket = followupBucket(c.next_followup);
+        const statusText = {
+          overdue: "Overdue",
+          thisWeek: "Due This Week",
+          next2: "Due Next 2 Weeks",
+          later: "Later",
+          noDate: "No Date"
+        }[bucket];
+
+        return `
+          <article class="queue-item">
+            <div class="row">
+              <div>
+                <div class="name">${escapeHtml(c.full_name)}</div>
+                <div class="meta">${escapeHtml(c.firm || "")} · ${escapeHtml(c.group)}</div>
+              </div>
+              <div class="queue-status status-${bucket}">${statusText}</div>
+            </div>
+            <div class="meta" style="margin-top:5px;">Next follow-up: ${fmtDate(c.next_followup)}</div>
+            <div class="inline-actions">
+              <button class="small ghost" data-queue-action="logtouch" data-id="${c.id}">Log touch today</button>
+              <button class="small ghost" data-queue-action="snooze7" data-id="${c.id}">Snooze +7d</button>
+              <button class="small ghost" data-queue-action="snooze14" data-id="${c.id}">Snooze +14d</button>
+              <button class="small ghost" data-queue-action="snooze30" data-id="${c.id}">Snooze +30d</button>
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    function openModal(contact = null) {
+      editingId = contact ? contact.id : null;
+      modalTitle.textContent = contact ? "Edit Contact" : "Add Contact";
+      form.reset();
+
+      if (contact) {
+        for (const key of ["full_name", "firm", "role", "group", "coverage_tags", "relationship_strength", "last_touch", "next_followup", "how_i_can_help", "deal_context", "notes", "last_outcome"]) {
+          const el = form.elements[key];
+          if (!el) continue;
+          el.value = contact[key] ?? "";
+        }
+      } else {
+        form.elements.group.value = groups[0];
+        form.elements.last_outcome.value = outcomes[0];
+        form.elements.relationship_strength.value = 3;
+      }
+
+      dialog.showModal();
+    }
+
+    function closeModal() {
+      dialog.close();
+      editingId = null;
+    }
+
+    function formToContact() {
+      const data = Object.fromEntries(new FormData(form).entries());
+      data.relationship_strength = Math.max(1, Math.min(5, Number(data.relationship_strength || 3)));
+      data.full_name = (data.full_name || "").trim();
+      data.firm = (data.firm || "").trim();
+      data.role = (data.role || "").trim();
+      data.group = groups.includes(data.group) ? data.group : "Other";
+      data.last_outcome = outcomes.includes(data.last_outcome) ? data.last_outcome : "Other";
+      return data;
+    }
+
+    function filteredContacts() {
+      const q = searchInput.value.trim().toLowerCase();
+      if (!q) return contacts;
+      return contacts.filter((c) => [c.full_name, c.firm, c.coverage_tags, c.notes, c.deal_context, c.how_i_can_help]
+        .some((x) => String(x || "").toLowerCase().includes(q)));
+    }
+
+    function followupBucket(dateStr) {
+      if (!dateStr) return "noDate";
+      const target = toDate(dateStr);
+      if (!target) return "noDate";
+      const t = startOfDay(target);
+      const today = startOfDay(new Date());
+      const diff = Math.floor((t - today) / 86400000);
+      if (diff < 0) return "overdue";
+      if (diff <= 7) return "thisWeek";
+      if (diff <= 21) return "next2";
+      return "later";
+    }
+
+    function sortByFollowup(a, b) {
+      if (!a && !b) return 0;
+      if (!a) return 1;
+      if (!b) return -1;
+      return toDate(a) - toDate(b);
+    }
+
+    function loadContacts() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) {
+          const seeded = structuredClone(sampleContacts);
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(seeded));
+          return seeded;
+        }
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : structuredClone(sampleContacts);
+      } catch {
+        return structuredClone(sampleContacts);
+      }
+    }
+
+    function saveContacts() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(contacts));
+    }
+
+    function exportJSON() {
+      const blob = new Blob([JSON.stringify(contacts, null, 2)], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `banker_crm_backup_${todayISO()}.json`;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 500);
+    }
+
+    function importJSON(event) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const parsed = JSON.parse(String(reader.result));
+          if (!Array.isArray(parsed)) throw new Error("Invalid format");
+          contacts = parsed.map((c) => normalizeContact(c));
+          saveContacts();
+          render();
+          alert("Contacts imported successfully.");
+        } catch {
+          alert("Could not import JSON. Please use a valid backup file.");
+        } finally {
+          event.target.value = "";
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function normalizeContact(c) {
+      return {
+        id: c.id || crypto.randomUUID(),
+        full_name: String(c.full_name || "").trim(),
+        firm: String(c.firm || "").trim(),
+        role: String(c.role || "").trim(),
+        group: groups.includes(c.group) ? c.group : "Other",
+        coverage_tags: String(c.coverage_tags || ""),
+        relationship_strength: Math.max(1, Math.min(5, Number(c.relationship_strength || 3))),
+        last_touch: c.last_touch || "",
+        next_followup: c.next_followup || "",
+        how_i_can_help: String(c.how_i_can_help || ""),
+        deal_context: String(c.deal_context || ""),
+        notes: String(c.notes || ""),
+        last_outcome: outcomes.includes(c.last_outcome) ? c.last_outcome : "Other"
+      };
+    }
+
+    function dateOffset(days) {
+      const d = new Date();
+      d.setDate(d.getDate() + days);
+      return d.toISOString().slice(0, 10);
+    }
+
+    function addDays(baseISO, days) {
+      const d = toDate(baseISO) || new Date();
+      d.setDate(d.getDate() + days);
+      return d.toISOString().slice(0, 10);
+    }
+
+    function todayISO() {
+      return new Date().toISOString().slice(0, 10);
+    }
+
+    function toDate(iso) {
+      if (!iso) return null;
+      const d = new Date(iso + "T00:00:00");
+      return Number.isNaN(d.getTime()) ? null : d;
+    }
+
+    function startOfDay(d) {
+      return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    }
+
+    function fmtDate(iso) {
+      const d = toDate(iso);
+      if (!d) return "—";
+      return d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+    }
+
+    function splitTags(tags) {
+      return String(tags || "").split(",").map((t) => t.trim()).filter(Boolean);
+    }
+
+    function truncate(s, n) {
+      return s.length > n ? s.slice(0, n - 1) + "…" : s;
+    }
+
+    function statCard(label, value, cls) {
+      return `<div class="stat"><div class="label">${label}</div><div class="value ${cls}">${value}</div></div>`;
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+  </script>
+</body>
+</html>
