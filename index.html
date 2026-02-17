@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Codex Test Drive</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app">
+      <header>
+        <h1>Codex Test Drive</h1>
+        <p>Use this tiny app to simulate a coding request and track what happened.</p>
+      </header>
+
+      <section class="card">
+        <h2>1) Write a request</h2>
+        <label for="promptInput">What do you want Codex to do?</label>
+        <textarea id="promptInput" rows="4" placeholder="e.g., Build a todo list with filters."></textarea>
+        <button id="runBtn">Run simulation</button>
+      </section>
+
+      <section class="card">
+        <h2>2) Simulated workflow</h2>
+        <ul id="steps"></ul>
+      </section>
+
+      <section class="card">
+        <h2>3) Notes</h2>
+        <p>This section is saved in your browser so you can keep experiment notes.</p>
+        <textarea id="notesInput" rows="5" placeholder="What did you learn from this run?"></textarea>
+        <div class="actions">
+          <button id="saveBtn">Save notes</button>
+          <button id="clearBtn" class="ghost">Clear everything</button>
+        </div>
+        <p id="status" aria-live="polite"></p>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
